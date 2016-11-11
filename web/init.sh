@@ -8,4 +8,6 @@ mysql -u root -e "CREATE USER 'saya'@'localhost'"
 mysql -u root -e "SET PASSWORD FOR 'saya'@'localhost' = PASSWORD('sayanouta')"
 mysql -u root -e "CREATE DATABASE ask"
 mysql -u root -e "GRANT ALL ON ask.* TO 'saya'@'localhost'"
+sudo ./ask/manage.py makemigrations
 sudo ./ask/manage.py migrate
+
