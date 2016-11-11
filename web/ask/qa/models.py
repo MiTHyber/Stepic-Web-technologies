@@ -19,7 +19,7 @@ class Question(models.Model):
     rating = models.IntegerField(default=0)
     author = models.ForeignKey(User, related_name='author')
     likes = models.ManyToManyField(User, related_name='liked', blank=True)
-    object = QuestionManager()
+    objects = QuestionManager()
 
 
 class Answer(models.Model):
