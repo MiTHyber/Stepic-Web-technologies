@@ -5,6 +5,7 @@ from qa.models import Question, Answer
 from django.shortcuts import get_object_or_404
 from qa.forms import AskForm, AnswerForm
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 
 
 def test(request, *args, **kwargs):
@@ -29,11 +30,11 @@ def recent_questions(request):
     })
 
 
+@csrf_exempt
 def question(request, pk):
-    author = User.objects.get(username='Saya')
+    q = get_object_or_404(Question, pk=pk)
+    answers = Answer.objects.filter(question=q).all()
     if request.method == 'GET':
-        q = get_object_or_404(Question, pk=pk)
-        answers = Answer.objects.filter(question=q).all()
         form = AnswerForm()
         return render(request, 'question.html', {
             'question': q,
@@ -41,7 +42,13 @@ def question(request, pk):
             'form': form,
         })
     if request.method == 'POST':
-        return answer(request)
+        Answer.objects.create(text=request.POST.get('text'),question=q,author=User.objects.get(username='Saya'))
+        form = AnswerForm
+        return render(request, 'question.html', {
+            'question': q,
+            'answers': answers,
+            'form': form,
+        })
 
 
 def popular_questions(request):
