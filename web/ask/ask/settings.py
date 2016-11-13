@@ -51,6 +51,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# TEMPLATE_DIRS=('/home/box/web/ask/templates/')
+
 ROOT_URLCONF = 'ask.urls'
 
 TEMPLATES = [

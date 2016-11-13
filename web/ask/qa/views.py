@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from qa.models import Question, Answer
 from django.shortcuts import get_object_or_404
+from qa.forms import AskForm, AnswerForm
+from django.contrib.auth.models import User
 
 
 def test(request, *args, **kwargs):
@@ -28,12 +30,18 @@ def recent_questions(request):
 
 
 def question(request, pk):
-    q = get_object_or_404(Question, pk=pk)
-    answers = Answer.objects.filter(question=q).all()
-    return render(request, 'question.html', {
-        'question': q,
-        'answers': answers,
-    })
+    author = User.objects.get(username='Saya')
+    if request.method == 'GET':
+        q = get_object_or_404(Question, pk=pk)
+        answers = Answer.objects.filter(question=q).all()
+        form = AnswerForm(author)
+        return render(request, 'question.html', {
+            'question': q,
+            'answers': answers,
+            'form': form,
+        })
+    if request.method == 'POST':
+        return answer(request)
 
 
 def popular_questions(request):
@@ -52,3 +60,26 @@ def popular_questions(request):
         'paginator': paginator,
         'page': page,
     })
+
+
+def ask(request):
+    author = User.objects.get(username='Saya')
+    if request.method == 'POST':
+        form = AskForm(author, request.POST)
+        if form.is_valid():
+            q = form.save()
+            return HttpResponseRedirect(q.get_url())
+    else:
+        form = AskForm(author)
+    return render(request, 'ask.html', {
+        'form': form,
+    })
+
+
+def answer(request):
+    author = User.objects.get(username='Saya')
+    if request.method == 'POST':
+        form = AnswerForm(author, request.POST)
+        if form.is_valid():
+            q = form.save()
+            return HttpResponseRedirect(q.get_url())

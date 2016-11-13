@@ -31,3 +31,6 @@ class Answer(models.Model):
     added_at = models.DateField(auto_now_add=True)
     question = models.ForeignKey(Question)
     author = models.ForeignKey(User)
+
+    def get_url(self):
+        return reverse('question', kwargs={'pk': self.question_id})

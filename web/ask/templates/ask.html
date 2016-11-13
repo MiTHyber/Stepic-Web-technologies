@@ -1,0 +1,8 @@
+<form method="POST" action="/ask/">
+	{% csrf_token %}
+	{{ form.as_ul }}
+	<div class="form-actions">
+		<button type="submit" class="btn btn-primary">
+			Сохранить</button>
+		</div>
+</form>

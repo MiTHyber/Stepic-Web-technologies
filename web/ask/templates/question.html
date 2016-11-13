@@ -4,4 +4,12 @@
 	{% for answer in answers %}
 		<p>{{ answer.text }}<p>
 	{% endfor %}
+	<form method="POST" action="/answer/">
+	{% csrf_token %}
+	{{ form.as_ul }}
+	<div class="form-actions">
+		<button type="submit" class="btn btn-primary">
+			Сохранить</button>
+		</div>
+	</form>
 </body>
