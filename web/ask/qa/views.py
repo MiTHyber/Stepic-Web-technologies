@@ -34,7 +34,7 @@ def question(request, pk):
     if request.method == 'GET':
         q = get_object_or_404(Question, pk=pk)
         answers = Answer.objects.filter(question=q).all()
-        form = AnswerForm(author)
+        form = AnswerForm()
         return render(request, 'question.html', {
             'question': q,
             'answers': answers,
@@ -65,12 +65,13 @@ def popular_questions(request):
 def ask(request):
     author = User.objects.get(username='Saya')
     if request.method == 'POST':
-        form = AskForm(author, request.POST)
+        form = AskForm(request.POST)
         if form.is_valid():
+            form._user = author
             q = form.save()
             return HttpResponseRedirect(q.get_url())
     else:
-        form = AskForm(author)
+        form = AskForm()
     return render(request, 'ask.html', {
         'form': form,
     })
@@ -79,7 +80,9 @@ def ask(request):
 def answer(request):
     author = User.objects.get(username='Saya')
     if request.method == 'POST':
-        form = AnswerForm(author, request.POST)
+        form = AnswerForm(request.POST)
         if form.is_valid():
+            form._user = author
+            form._question = request.POST.get('question')
             q = form.save()
             return HttpResponseRedirect(q.get_url())

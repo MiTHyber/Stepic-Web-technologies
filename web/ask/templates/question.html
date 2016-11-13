@@ -7,6 +7,7 @@
 	<form method="POST" action="/answer/">
 	{% csrf_token %}
 	{{ form.as_ul }}
+	<input type="hidden" name="question" value="{{ question.pk }}">
 	<div class="form-actions">
 		<button type="submit" class="btn btn-primary">
 			Сохранить</button>
