@@ -1,0 +1,8 @@
+<form method="POST" action="/signup/">
+	{% csrf_token %}
+	{{ form.as_table }}
+	<div class="form-actions">
+		<button type="submit" class="btn btn-primary">
+			Сохранить</button>
+		</div>
+</form>

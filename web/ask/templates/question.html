@@ -1,7 +1,9 @@
 <h1>{{ question.title }}</h1>
+<h2>{{ question.author.username }}</h2>
 <body>
 	<p>{{ question.text }}</p>
 	{% for answer in answers %}
+		<p><b>{{ answer.author.username }}</b><p>
 		<p>{{ answer.text }}<p>
 	{% endfor %}
 	<form method="POST" action="/answer/">

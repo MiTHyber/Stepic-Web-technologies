@@ -3,9 +3,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from qa.models import Question, Answer
 from django.shortcuts import get_object_or_404
-from qa.forms import AskForm, AnswerForm
+from qa.forms import AskForm, AnswerForm, SignUpForm
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
 
 
 def test(request, *args, **kwargs):
@@ -30,7 +30,6 @@ def recent_questions(request):
     })
 
 
-@csrf_exempt
 def question(request, pk):
     q = get_object_or_404(Question, pk=pk)
     answers = Answer.objects.filter(question=q).all()
@@ -42,7 +41,7 @@ def question(request, pk):
             'form': form,
         })
     if request.method == 'POST':
-        Answer.objects.create(text=request.POST.get('text'),question=q,author=User.objects.get(username='Saya'))
+        Answer.objects.create(text=request.POST.get('text'),question=q,author=request.user)
         form = AnswerForm
         return render(request, 'question.html', {
             'question': q,
@@ -70,11 +69,10 @@ def popular_questions(request):
 
 
 def ask(request):
-    author = User.objects.get(username='Saya')
     if request.method == 'POST':
         form = AskForm(request.POST)
         if form.is_valid():
-            form._user = author
+            form._user = request.user
             q = form.save()
             return HttpResponseRedirect(q.get_url())
     else:
@@ -85,11 +83,24 @@ def ask(request):
 
 
 def answer(request):
-    author = User.objects.get(username='Saya')
     if request.method == 'POST':
         form = AnswerForm(request.POST)
         if form.is_valid():
-            form._user = author
+            form._user = request.user
             form._question = request.POST.get('question')
             q = form.save()
             return HttpResponseRedirect(q.get_url())
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            q = form.save()
+            login(request, q)
+            return HttpResponseRedirect('/')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {
+        'form': form,
+    })
