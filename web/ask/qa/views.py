@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from qa.forms import AskForm, AnswerForm, SignUpForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
 
 
 def test(request, *args, **kwargs):
@@ -97,7 +98,8 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             q = form.save()
-            login(request, q)
+            user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password'))
+            login(request, user)
             return HttpResponseRedirect('/')
     else:
         form = SignUpForm()
